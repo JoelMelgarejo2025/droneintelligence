@@ -1,0 +1,18 @@
+# DroneIntelligence — publicación estática en Hostinger
+Options -Indexes
+DirectoryIndex landing.html index.html
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+# Landing pública como página principal, sin reemplazar la aplicación existente.
+RewriteRule ^$ landing.html [L]
+# La aplicación GIS existente permanece disponible desde /app/.
+RewriteRule ^app/?$ /index.html [R=302,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+<FilesMatch "\.(html|css|js)$">
+Header set X-Content-Type-Options "nosniff"
+Header set Referrer-Policy "strict-origin-when-cross-origin"
+</FilesMatch>
+</IfModule>
