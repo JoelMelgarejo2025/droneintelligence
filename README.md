@@ -1,40 +1,39 @@
-# droneintelligence
+# DroneIntelligence
 
-Landing e interfaz geoespacial en negro y plomo, con backend local Python para GeoTIFF, teselas y conectores de análisis.
+Landing pública premium y plataforma geoespacial para trabajar con imágenes de drones, ortomosaicos y datos raster.
 
-## Estructura
-- `web/index.html`: landing.
-- `web/app/index.html`: plataforma.
-- `web/landing-assets/`: recursos optimizados de la landing y licencia de Inter.
-- `web/config.js`: dirección pública de API cuando se sirve desde otro origen.
-- `backend/`: servidor Python y dependencias.
-- `scripts/package_web.py`: genera un paquete estático que no incluye el backend ni los datos.
-- `docs/`: réplica entre cuentas y publicación.
+## Publicación estática
+
+La rama `main` contiene una carpeta `public/` preparada para Hostinger:
+- `public/landing.html`: landing pública de DroneIntelligence.
+- `public/.htaccess`: configura la landing como página principal y deriva `/app/` a la aplicación existente.
+- `public/index.html`: aplicación/plataforma existente; se conserva sin reemplazar.
+- `public/proyectos.html`: galería de proyectos.
+- `public/project-1.webp` a `public/project-4.webp`: recursos visuales de la galería y landing.
+- `public/inter.ttf`: tipografía Inter.
+- `public/config.js`: configuración del endpoint API.
+
+**Configuración recomendada en Hostinger:** repositorio `JoelMelgarejo2025/droneintelligence`, rama `main`, directorio de despliegue `public` (si el plan permite elegirlo). No desplegar todo el repositorio en `public_html`, porque también contiene backend y documentación.
+
+Dominio previsto: https://droneintelligence.space
+
+Consulta [HOSTINGER.md](HOSTINGER.md) para el procedimiento de publicación y verificación. Un commit en GitHub no demuestra que Hostinger haya desplegado los cambios: hay que comprobar el dominio después del despliegue.
+
+## Capacidades implementadas en el backend
+
+El código Python contempla:
+- lectura y visualización de ortomosaicos GeoTIFF RGB con CRS;
+- reproyección y generación de vistas/teselas raster;
+- biblioteca de proyectos y vistas previas;
+- inferencia YOLO cuando Ultralytics y un modelo local están instalados;
+- envío de fotografías a NodeODM, seguimiento de tareas y descarga de ortomosaicos.
+
+## Seguridad y límites de despliegue
+
+El backend Flask actual está limitado a localhost y no incorpora autenticación multiusuario. No exponerlo directamente en Internet. Para habilitar funciones de procesamiento desde la web pública hace falta un backend de producción con autenticación, CORS limitado, permisos, almacenamiento persistente y servicios configurados.
+
+La landing estática puede publicarse por separado. La publicación de HTML no significa que los endpoints Python, YOLO o NodeODM estén activos en el dominio. No colocar TIFF privados, pesos de modelos ni datos de clientes en el directorio público.
 
 ## Ejecución local
-Python 3.12 o compatible:
 
-```sh
-python -m venv .venv
-# Windows:
-.venv\Scripts\python -m pip install -r backend/requirements.txt
-.venv\Scripts\python backend/server.py
-```
-
-En Linux/macOS usa `.venv/bin/python`.
-Abre `http://127.0.0.1:8765/` para la landing y `/app/` para el software.
-
-## Datos
-Los TIFF, modelos y el manifiesto de los proyectos privados no se incluyen en Git. Copia por un canal privado las carpetas `data/` y `models/` del entorno local si necesitas esos proyectos en otro equipo. El servidor espera `data/library.json`, `data/source/` y las vistas previas. Las imágenes WebP incluidas son recursos derivados de los ejemplos utilizados en la landing: contienen vistas aéreas cuya publicación en este repositorio ha sido autorizada por su propietario.
-La publicación del repositorio no concede por sí sola una licencia de redistribución del software ni de las imágenes; esa licencia se definirá por separado.
-
-## Estado de publicación
-El backend está preparado para uso local. Mantiene restricciones de localhost y no implementa autenticación multiusuario. No publicar el servidor de desarrollo ni exponer datos privados sin adaptar dominios, autenticación, permisos, almacenamiento y servidor de producción.
-La landing estática sí puede empaquetarse por separado. Con un hosting sin Python, el HTML de la aplicación se visualizará, pero los servicios Python permanecerán desconectados hasta configurar una API compatible.
-Consulta `docs/REPLICAR.md` y `docs/HOSTINGER.md`.
-
-## Comprobaciones
-```sh
-.venv\Scripts\python -m unittest discover -s tests
-.venv\Scripts\python scripts/package_web.py
-```
+Revisa las rutas y dependencias de la versión local antes de ejecutar el backend. Los datos, modelos y proyectos privados deben mantenerse fuera del repositorio público.
