@@ -1,22 +1,40 @@
-# Publicación en Hostinger
+# Publicación de DroneIntelligence en Hostinger
 
-Flujo: cambios en gis300765 → réplica al repositorio de la cuenta vinculada → despliegue de Hostinger → verificación de la web.
+## Estado y estructura verificada (21-11-2026)
 
-La réplica y el despliegue son dos automatizaciones distintas. Copiar el repositorio una vez no actualiza permanentemente el destino.
+Repositorio: https://github.com/JoelMelgarejo2025/droneintelligence  
+Rama: `main`  
+Dominio: https://droneintelligence.space  
+Carpeta estática preparada: `public/`
 
-## Landing y sitio estático
-Ejecutar `python scripts/package_web.py`. El ZIP generado contiene únicamente el contenido de `web/`, con la landing como `index.html`, la aplicación en `app/` y sus recursos.
+La carpeta `public/` contiene los recursos estáticos de la plataforma existente y ahora incorpora:
+- `landing.html`: nueva landing pública.
+- `.htaccess`: muestra la landing en la raíz y conserva la entrada anterior de la aplicación en `/app/`.
+- `index.html`: aplicación/plataforma existente; no se reemplaza.
+- `proyectos.html`, `project-1.webp` a `project-4.webp`, `inter.ttf`, `config.js`.
 
-No desplegar todo este repositorio dentro de public_html: contiene backend y documentación. Publicar solo `web/`, mediante una configuración de despliegue que seleccione esa carpeta, una rama de publicación estática o un artefacto preparado. La vía exacta depende del tipo de plan de Hostinger. Revisar primero en una carpeta de prueba o subdominio y hacer una copia de la web existente antes de sustituirla.
+## Publicación en Hostinger
 
-## Plataforma completa
-Requiere un servicio compatible con Python/Flask y dependencias geoespaciales. En Hostinger, la documentación indica VPS para Python/Flask. Antes de desplegar: autenticación, permisos de proyectos, dominios permitidos, almacenamiento persistente de datos y un servidor de producción con HTTPS.
+En hPanel, abrir **Websites → Manage → Advanced → Git** (la ruta puede variar por plan) y configurar el repositorio:
+- Repository: `https://github.com/JoelMelgarejo2025/droneintelligence.git`
+- Branch: `main`
+- Deployment directory: `public` (si el asistente permite elegir directorio de despliegue).
 
-La configuración actual del backend es local y su restricción de localhost sigue activa. No se ha cambiado ni se ha publicado ningún servidor.
+Si Hostinger no permite seleccionar `public/` como directorio, no desplegar la raíz completa del repositorio sobre `public_html`: primero preparar un artefacto que contenga solo los archivos de `public/` y subir ese contenido a `public_html`. Hacer una copia de seguridad del contenido actual antes de reemplazarlo.
 
-`web/config.js` permite definir la URL de API si se hospeda por separado. Cambiar la URL no basta: el backend también debe permitir el origen elegido y autenticar las solicitudes antes de exponerse.
+Después de desplegar:
+1. Abrir `https://droneintelligence.space/` y confirmar que aparece la landing DroneIntelligence.
+2. Verificar imágenes, fuente, menú móvil, secciones, FAQ y enlaces.
+3. Abrir `https://droneintelligence.space/proyectos.html`.
+4. Abrir `https://droneintelligence.space/app/`; la regla de redirección lleva a la entrada anterior `/index.html`.
+5. Confirmar HTTPS y que no se haya publicado el backend ni archivos privados.
 
-Los TIFF, pesos y proyectos deben sobrevivir a las actualizaciones de código y quedar fuera de Git. En esta versión, parte del estado sigue en IndexedDB del navegador; hace falta persistencia de servidor para usuarios y equipos múltiples.
+## Límites importantes
 
-Documentación: https://www.hostinger.com/support/1583302-how-to-deploy-a-git-repository-in-hostinger/
-Python: https://www.hostinger.com/support/which-programming-languages-and-frameworks-are-supported-at-hostinger/
+La landing y la galería son estáticas. El backend Python/Flask del repositorio conserva una restricción de acceso local y no implementa autenticación multiusuario. No exponerlo directamente en Internet. YOLO y NodeODM solo funcionarán públicamente después de desplegar un backend de producción con autenticación, CORS limitado, permisos, almacenamiento persistente y servicios configurados.
+
+La publicación del HTML en Hostinger no implica que los endpoints Python estén operativos. No subir TIFF privados, pesos de modelos ni datos de clientes al directorio público.
+
+## Comprobación de entrega
+
+La actualización de GitHub no confirma por sí sola que Hostinger haya ejecutado un despliegue. La verificación final debe hacerse contra el dominio después de que hPanel complete la publicación.
